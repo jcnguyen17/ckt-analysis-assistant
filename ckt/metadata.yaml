@@ -1,0 +1,115 @@
+project:
+  name: ckt_analysis
+  description: >
+    Analysis of relationships between unCKT and CKT1 exam results,
+    and student demographic data.
+    
+  context: >
+    CKT stands for Content Knowledge Test. unCKT is the unofficial/mock
+    exam completed before the official CKT. CKT1 is the first official
+    final exam attempt. CKT2 is the second attempt/resit.
+
+
+  
+
+dataset:
+  name: gold_student_exam_summary
+  grain: one row per student per exam sitting
+  description: >
+    Cleaned gold-level student summary table that contains exam results for unCKT, CKT1, CKT2 and
+    demographic data for each student
+
+
+fields:
+  alias:
+    label: Student ID
+    type: identifier
+    description: Unique anonymous identifier for each student
+    allowed_roles: id
+    synonyms: [student, students, pupil]
+  
+  exam_type:
+    label: Exam Type
+    type: categorical
+    description: >
+      Identifies which exam sitting the row represents. Expected values include
+      unCKT, CKT1, and CKT2.
+    allowed_roles: [filter, group_by, pivot_column]
+    allowed_values: [unCKT, CKT1, CKT2]
+    synonyms: [test, exam, test type, assessment type, mock exam, final exam, resit]
+
+  total_score:
+    label: Score
+    type: numerical
+    description: Total score achieved by the student for the exam sitting
+    allowed_roles: [metric, correlation_variable]
+    synonyms: [score, total score, result, exam result, mark]
+  
+  gender:
+    label: Gender
+    type: categorical
+    description: Gender of the student
+    allowed_roles: [filter, group_by]
+    synonyms: [sex]
+
+  program_name:
+    label: Program Name
+    type: Categorical
+    description: Student program or degree name
+    allowed_roles: [filter, group_by]
+    synonyms: [program, course, degree]
+
+  funding_source:
+    label: Funding Source
+    type: Categorical
+    description: The funding nature of the student's course admission
+    allowed_values: [CSS, FEE]
+    allowed_roles: [filter, group_by]
+    synonyms: [fee, course payment]
+    
+  study_mode:
+    label: Study Mode
+    type: Categorical
+    description: The study mode of the student 
+    allowed_values: [PT, FT]
+    allowed_roles: [filter, group_by]
+    synonyms: [hours per week, full time, part time]
+    
+  ethnicity:
+    label: Ethnicity
+    type: Categorical
+    description: The ethnicity of the student
+    allowed_values: [ABRGL, NABTRRS, NONE]
+    allowed_roles: [filter, group_by]
+    synonyms: [race, background]
+  
+  age_at_exam:
+    label: Age
+    type: Numerical
+    description: Age of student at exam stitting
+    allowed_roles: [filter, group_by]
+    synonyms: [age, student age, age at exam]
+  
+
+  allowed_analyses:
+    average_by_group:
+      description: Calculate the average numeric score grouped by a categorical demographic variable
+      required: [metric, group_by]
+      compatible_chart_types: [bar]
+
+    correlation:
+      description: calculate the correlation between two numerical values
+      required: [x, y]
+      compatible_chart_types: scatter
+
+    distribution_by_group:
+      description: show the distribution of a numeric score across groups
+      required: [metric, group]
+      compatible_chart_types: boxplot
+
+    
+    interpretation_rules:
+      - do not claim causation from correlation
+      - mention sample size where possible
+      - be cautious when groups have small counts
+      - treat missing values as excluded from calculations
