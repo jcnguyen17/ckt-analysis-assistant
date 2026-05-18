@@ -5,10 +5,12 @@
 # run analysis on dataframe
 
 import pandas as pd
-from core.config import DATA_FILE
+from core.config import DATA_DIR
 from typing import Dict, List
 
-df = pd.read_csv(DATA_FILE)
+
+
+
 
 
 
@@ -59,7 +61,17 @@ def apply_aggregation(filtered_df: pd.DataFrame, metric_column: str, aggregation
 def execute_analysis(analysis_plan: Dict) -> pd.DataFrame:
     ''' Applies the analysis plan (filtering, group by, and aggregation) to the dataframe
     '''
+    
+    DATA_FILE = f"{DATA_DIR}\\ {analysis_plan["dataset"]}.csv"
+    DATA_FILE = DATA_DIR / f"{analysis_plan["dataset"]}.csv"
+
+    df = pd.read_csv(DATA_FILE)
 
     filtered_df = apply_filters(df, analysis_plan["filters"])
 
     return apply_aggregation(filtered_df, analysis_plan["metric_column"], analysis_plan["aggregation"], analysis_plan["group_by"])
+
+
+def select_x_y_correlation(analysis_plan: Dict) -> pd.DataFrame:
+    '''Selects the X Variable (independent variable) and Y variable (dependent variable) for correlation analysis'''
+    

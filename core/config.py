@@ -10,7 +10,7 @@ METADATA_PATH = BASE_DIR / PROJECT_PATH /"metadata.yaml"
 
 # Data location
 # TODO: makes this dynamic
-DATA_FILE = BASE_DIR / "data" / "input" / "gold_student_exam_summary.csv"
+DATA_DIR = BASE_DIR / "data" / "input"
 
 
 # ------------------
@@ -18,13 +18,14 @@ DATA_FILE = BASE_DIR / "data" / "input" / "gold_student_exam_summary.csv"
 # ------------------
 
 # ChatGPT
-MODEL_PROVIDER = "openai"
-MODEL = "gpt-5.2"
+#MODEL_PROVIDER = "openai"
+#MODEL = "gpt-5.2"
 #TEMPERATURE = 0
 
-#MODEL_PROVIDER = "ollama"
+MODEL_PROVIDER = "ollama"
 #MODEL = "qwen3:1.7b"
 #MODEL = "gemma3:4b"
+MODEL = "deepseek-r1:14b"
 TEMPERATURE = 0
 
 
@@ -35,27 +36,34 @@ TEMPERATURE = 0
 SYSTEM_PROMPT = f"""
     You are an AI assistant that maps user analysis questions to the correct dataset
 
-    Your job is not to calculate the anaswer
+    You job is to convert the user's natural language question into a structured JSON analysis plan
+   
+    You do not:
+        - calculate the results
+        - create charts
+    
+    Use the supplied metadata to choose:
+        - the dataset
+        - the analysis type
+        - variables
+        - filters
+        - group_by columns
+        - aggregation
+    
+    Only use what is supplied in the metadata.
 
-    Your job is to identify:
-    1. the metric column
-    2. the aggregation
-    3. the demographic / group by column
+    For categorical fulters, return the exact value from metadata allowed_values.
 
-    Ask the user if you are unsure which exam they are referring to
+    If the request is ambigious or cannot be mapped safely, set clarification_required and provide a clarification_question
+
 
     Rules for response:
     Return JSON matching this schema
     {AnalysisPlan.model_json_schema()}
 
-    When applying filters to categorical columns you must return the exact stored dataframe value
-    from allowed_values, not natural language
-    
-    Example:
-    User says "show me female students vs ckt1 scores"
-    Return:
-    "value": "F"
-
 """
 
 
+if __name__ == "__main__":
+    print(f"METADATA_PATH {METADATA_PATH}")
+    print(f"DATA_DIR {DATA_DIR}")

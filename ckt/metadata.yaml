@@ -9,108 +9,216 @@ project:
     exam completed before the official CKT. CKT1 is the first official
     final exam attempt. CKT2 is the second attempt/resit.
 
-
-
-dataset:
-  name: gold_student_exam_summary
-  grain: one row per student per exam sitting
-  description: >
-    Cleaned gold-level student summary table that contains exam results for unCKT, CKT1, CKT2 and
-    demographic data for each student
-
-
-fields:
-  alias:
-    label: Student ID
-    type: identifier
-    description: Unique anonymous identifier for each student
-    allowed_roles: id
-    synonyms: [student, students, pupil]
-  
-  exam_type:
-    label: Exam Type
-    type: categorical
+datasets:
+  gold_student_progression_with_demographics:
+    grain: one row per student
     description: >
-      Identifies which exam sitting the row represents. Expected values include
-      unCKT, CKT1, and CKT2.
-    allowed_roles: [filter, group_by, pivot_column]
-    allowed_values: 
-      unCKT:
-        description: mock / practice exam done at start of semester
+      Student-level progression table with one row per student. Contains unCKT,
+      CKT1, and CKT2 scores as separate columns, plus demographic attributes.
+      This is the preferred dataset for exam-to-exam correlation, progression,
+      improvement, and relationships between exams segmented by demographics.
+    best_for:
+      - "correlation between exam scores"
+      - "exam progression by demographic data"
+      - "improvemenet from unCKT to CKT1"
+      - "comparing student pathways across demographics"
+    fields:
+      alias:
+        label: Student ID
+        type: identifier
+        description: Unique anonymous identifier for each student
+        allowed_roles: id
+        synonyms: [student, students, pupil]
+      
+      unCKT_score:
+        label: unCKT
+        type: numerical
+        description: Student's result  for unCKT exam  done at start of semester
+        allowed_roles: [metric, correlation_variable]
         synonyms: [mock exam, practice exam, unCKT, baseline exam]
-      CKT1:
-        description: first attempt at official end of semester final exam
-        synonyms: [final exam, ckt, ckt1, main exam, offical exam]
-      CKT2:
-        description:  second attempt at official end of semester final exam for students who need a resit
+
+      ckt1_score:
+        label: CKT1
+        type: numerical
+        description: Student's result  for first attempt at official end of semester final exam
+        allowed_roles: [metric, correlation_variable]
+        synonyms: [final exam, ckt, ckt1, main exam, offical exam]  
+
+      ckt2_score:
+        label: CKT2
+        type: numerical
+        description: Student's result for second attempt at official end of semester final exam for students who need a resit
+        allowed_roles: [metric, correlation_variable]
         synonyms: [resit, ckt2, second ckt, retry, second attempt ]
-    
 
-  total_score:
-    label: Score
-    type: numerical
-    description: Total score achieved by the student for the exam sitting
-    allowed_roles: [metric, correlation_variable]
-    synonyms: [score, total score, result, exam result, mark]
-  
-  gender:
-    label: Gender
-    type: categorical
-    description: Gender of the student
-    allowed_roles: [filter, group_by]
-    synonyms: [sex]
-    allowed_values:
-      F:
-        meaning: "Female"
-        aliases: ["female", "women", "woman", "girl", "girls"]
-      M:
-        meaning: "Male"
-        aliases: ["male", "man", "men", "boy", "boys"]
-
-  program_name:
-    label: Program Name
-    type: Categorical
-    description: Student program or degree name
-    allowed_roles: [filter, group_by]
-    synonyms: [program, course, degree]
-
-  funding_source:
-    label: Funding Source
-    type: Categorical
-    description: The funding nature of the student's course admission
-    allowed_values: [CSS, FEE]
-    allowed_roles: [filter, group_by]
-    synonyms: [fee, course payment]
+      unckt_to_ckt1:
+        label: unckt to ckt1 improvement
+        type: numerical
+        description: The difference between the student's unckt and CKT1 scores
+        allowed_roles: [metric, correlation_variable]
+        synonyms: [student progress, student improvement]
     
-  study_mode:
-    label: Study Mode
-    type: Categorical
-    description: The study mode of the student 
-    allowed_values: [PT, FT]
-    allowed_roles: [filter, group_by]
-    synonyms: [hours per week, full time, part time]
-    allowed values:
-      PT:
-        meaning: "Part Time Study"
-        aliases: ["part time", "part-time"]
-      FT:
-        meaning: "Full Time Study"
-        aliases: ["full time", "full-time"]
-    
-  ethnicity:
-    label: Ethnicity
-    type: Categorical
-    description: The ethnicity of the student
-    allowed_values: [ABRGL, NABTRRS, NONE]
-    allowed_roles: [filter, group_by]
-    synonyms: [race, background]
-  
-  age_at_exam:
-    label: Age
-    type: Numerical
-    description: Age of student at exam stitting
-    allowed_roles: [filter, group_by]
-    synonyms: [age, student age, age at exam]
+      gender:
+        label: Gender
+        type: categorical
+        description: Gender of the student
+        allowed_roles: [filter, group_by]
+        synonyms: [sex]
+        allowed_values:
+          F:
+            meaning: "Female"
+            aliases: ["female", "women", "woman", "girl", "girls"]
+          M:
+            meaning: "Male"
+            aliases: ["male", "man", "men", "boy", "boys"]
+
+      program_name:
+        label: Program Name
+        type: categorical
+        description: Student program or degree name
+        allowed_roles: [filter, group_by]
+        synonyms: [program, course, degree]
+
+      funding_source:
+        label: Funding Source
+        type: categorical
+        description: The funding nature of the student's course admission
+        allowed_values: [CSS, FEE]
+        allowed_roles: [filter, group_by]
+        synonyms: [fee, course payment]
+        
+      study_mode:
+        label: Study Mode
+        type: categorical
+        description: The study mode of the student 
+        allowed_values: [PT, FT]
+        allowed_roles: [filter, group_by]
+        synonyms: [hours per week, full time, part time]
+        allowed values:
+          PT:
+            meaning: "Part Time Study"
+            aliases: ["part time", "part-time"]
+          FT:
+            meaning: "Full Time Study"
+            aliases: ["full time", "full-time"]
+        
+      ethnicity:
+        label: Ethnicity
+        type: categorical
+        description: The ethnicity of the student
+        allowed_values: [ABRGL, NABTRRS, NONE]
+        allowed_roles: [filter, group_by]
+        synonyms: [race, background]
+      
+      age_at_exam:
+        label: Age
+        type: numerical
+        description: Age of student at exam stitting
+        allowed_roles: [filter, group_by]
+        synonyms: [age, student age, age at exam]
+
+
+  gold_student_exam_summary:
+    grain: one row per student per exam sitting
+    description: >
+      Cleaned gold-level student summary table that contains exam results for unCKT, CKT1, CKT2 and
+      demographic data for each student
+    best_for:
+      - "Average score for a single exam type by demographic group"
+      - "Distribution of scores for one exam type"
+      - "Filtering to one exam_type, such as CKT1 or unCKT"
+      - "Comparing average score across demographic groups for a selected exam"
+    fields:
+      alias:
+        label: Student ID
+        type: identifier
+        description: Unique anonymous identifier for each student
+        allowed_roles: id
+        synonyms: [student, students, pupil]
+      
+      exam_type:
+        label: Exam Type
+        type: categorical
+        description: >
+          Identifies which exam sitting the row represents. Expected values include
+          unCKT, CKT1, and CKT2.
+        allowed_roles: [filter, group_by, pivot_column]
+        allowed_values: 
+          unCKT:
+            description: mock / practice exam done at start of semester
+            synonyms: [mock exam, practice exam, unCKT, baseline exam]
+          CKT1:
+            description: first attempt at official end of semester final exam
+            synonyms: [final exam, ckt, ckt1, main exam, offical exam]
+          CKT2:
+            description:  second attempt at official end of semester final exam for students who need a resit
+            synonyms: [resit, ckt2, second ckt, retry, second attempt ]
+        
+
+      total_score:
+        label: Score
+        type: numerical
+        description: Total score achieved by the student for the exam sitting
+        allowed_roles: [metric, correlation_variable]
+        synonyms: [score, total score, result, exam result, mark]
+      
+      gender:
+        label: Gender
+        type: categorical
+        description: Gender of the student
+        allowed_roles: [filter, group_by]
+        synonyms: [sex]
+        allowed_values:
+          F:
+            meaning: "Female"
+            aliases: ["female", "women", "woman", "girl", "girls"]
+          M:
+            meaning: "Male"
+            aliases: ["male", "man", "men", "boy", "boys"]
+
+      program_name:
+        label: Program Name
+        type: categorical
+        description: Student program or degree name
+        allowed_roles: [filter, group_by]
+        synonyms: [program, course, degree]
+
+      funding_source:
+        label: Funding Source
+        type: categorical
+        description: The funding nature of the student's course admission
+        allowed_values: [CSS, FEE]
+        allowed_roles: [filter, group_by]
+        synonyms: [fee, course payment]
+        
+      study_mode:
+        label: Study Mode
+        type: categorical
+        description: The study mode of the student 
+        allowed_roles: [filter, group_by]
+        synonyms: [hours per week, full time, part time]
+        allowed values:
+          PT:
+            meaning: "Part Time Study"
+            aliases: ["part time", "part-time"]
+          FT:
+            meaning: "Full Time Study"
+            aliases: ["full time", "full-time"]
+        
+      ethnicity:
+        label: Ethnicity
+        type: categorical
+        description: The ethnicity of the student
+        allowed_values: [ABRGL, NABTRRS, NONE]
+        allowed_roles: [filter, group_by]
+        synonyms: [race, background]
+      
+      age_at_exam:
+        label: Age
+        type: numerical
+        description: Age of student at exam stitting
+        allowed_roles: [filter, group_by]
+        synonyms: [age, student age, age at exam]
   
 
   allowed_analyses:
@@ -122,12 +230,12 @@ fields:
     correlation:
       description: calculate the correlation between two numerical values
       required: [x, y]
-      compatible_chart_types: scatter
+      compatible_chart_types: [scatter]
 
     distribution_by_group:
       description: show the distribution of a numeric score across groups
       required: [metric, group]
-      compatible_chart_types: boxplot
+      compatible_chart_types: [boxplot]
 
     interpretation_rules:
       - do not claim causation from correlation

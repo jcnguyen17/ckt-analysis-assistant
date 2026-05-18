@@ -81,7 +81,8 @@ if prompt:
            
             #print(result)
             results = create_json(results_text)
-            df = execute_analysis(results)
+            if results["analysis_type"] == "average_by_group":
+                df = execute_analysis(results)
         
             with st.chat_message("assistant"):
                 if results["clarification_required"]:
@@ -89,7 +90,8 @@ if prompt:
                     st.session_state["pending_analysis"] = results
                 else: 
                     st.markdown(results)
-                    st.dataframe(df)
+                    if results["analysis_type"] == "average_by_group":
+                        st.dataframe(df)
                     # Clear the pending analysis plan
                     st.session_state.pop("pending_analysis", None)
 
